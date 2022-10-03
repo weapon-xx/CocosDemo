@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, math } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, math, Vec3 } from 'cc';
 import { Bullet } from '../bullet/Bullet';
 import { EnemyPlane } from '../plane/EnemyPlane';
 import { Constant } from './Constant';
@@ -75,10 +75,10 @@ export class GameManager extends Component {
                 this._currCreateEnemyTime = 0;
             }
         } else if (this._combinationInterval === Constant.Combination.PLANE2) {
-            if (this._currCreateEnemyTime > this.creatrEnemyTime * 0.8) {
+            if (this._currCreateEnemyTime > this.creatrEnemyTime * 0.9) {
                 const randomCombination  = math.randomRangeInt(1, 3);
                 if (randomCombination === Constant.Combination.PLANE2) {
-
+                    this.creatrCombination1();
                 } else {
                     this.creatrEnemyPlane();
                 }
@@ -86,21 +86,39 @@ export class GameManager extends Component {
                 this._currCreateEnemyTime = 0;
             }
         } else {
+            if (this._currCreateEnemyTime > this.creatrEnemyTime * 0.8) {
+                const randomCombination  = math.randomRangeInt(1, 4);
+                if (randomCombination === Constant.Combination.PLANE2) {
+                    this.creatrCombination1();
+                } else if (randomCombination === Constant.Combination.PLANE3) {
+                    this.creatrCombination2();
+                } else {
+                    this.creatrEnemyPlane();
+                }
 
+                this._currCreateEnemyTime = 0;
+            }
         }
     }
 
     // 创建子弹
     public createPlayerBullet(){
         const bullet = instantiate(this.bullet01);
-
         bullet.setParent(this.bulletRoot);
         const pos = this.playerPlane.position;
         bullet.setPosition(pos.x, pos.y, pos.z - 7);
         const bulletComp = bullet.getComponent(Bullet);
-        bulletComp.bulletSpeed = this.bulletSpeed;
+        bulletComp.show(this.bulletSpeed);
     }
 
+    // 创建敌机子弹
+    public createEnemyBullet(targetPos: Vec3) {
+        const bullet = instantiate(this.bullet01);
+        bullet.setParent(this.bulletRoot);
+        bullet.setPosition(targetPos.x, targetPos.y, targetPos.z + 6);
+        const bulletComp = bullet.getComponent(Bullet);
+        bulletComp.show(this.bulletSpeed, true);
+    }
     
     public creatrEnemyPlane() {
         const whichEnemy = math.randomRangeInt(1, 3);
@@ -117,10 +135,45 @@ export class GameManager extends Component {
         const enemy = instantiate(prefab);
         enemy.setParent(this.node);
         const enemyComp = enemy.getComponent(EnemyPlane);
-        enemyComp.show(speed);
+        enemyComp.show(this, speed, true);
 
         const randomPos = math.randomRangeInt(-25, 26);
         enemy.setPosition(randomPos, 0, -50);
+    }
+
+    public creatrCombination1() {
+        const enemyArray = new Array<Node>(5);
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemyArray[i] = instantiate(this.enemy01);
+            const element = enemyArray[i];
+            element.parent = this.node;
+            element.setPosition(-20 + i * 10, 0, -50);
+            const enemyComp = element.getComponent(EnemyPlane);
+            enemyComp.show(this, this.enemy1Speed, false);
+        }
+    }
+
+    public creatrCombination2() {
+        const enemyArray = new Array<Node>(7);
+        const combinationPos = [
+            -21, 0, -60,
+            -14, 0, -55,
+            -7, 0, -50,
+            0, 0, -45,
+            7, 0, -50,
+            14, 0, -55,
+            21, 0, -60,
+        ]
+
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemyArray[i] = instantiate(this.enemy02);
+            const element = enemyArray[i];
+            element.parent = this.node;
+            const startIndex = i * 3;
+            element.setPosition(combinationPos[startIndex], combinationPos[startIndex + 1], combinationPos[startIndex + 2]);
+            const enemyComp = element.getComponent(EnemyPlane);
+            enemyComp.show(this, this.enemy2Speed, false);
+        }
     }
 
     public isShooting(value: boolean){

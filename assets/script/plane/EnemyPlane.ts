@@ -1,14 +1,19 @@
 import { _decorator, Component, Node } from 'cc';
 import { Constant } from '../frameWork/Constant';
+import { GameManager } from '../frameWork/GameManager';
 const { ccclass, property } = _decorator;
 
 const OUTOFBOUNDE = 50;
 
 @ccclass('EnemyPlane')
 export class EnemyPlane extends Component {
-    private _enemySpeed = 0;
+    @property
+    public createBulletTime = 0.5;
 
-    // public enemyType = Constant.EnemyType.Type1;
+    private _enemySpeed = 0;
+    private _needBullet = false;
+    private _gameManager: GameManager = null;
+    private _currCreateBulletTime = 0;
 
 
     start() {
@@ -20,13 +25,24 @@ export class EnemyPlane extends Component {
         const movePos  = pos.z + this._enemySpeed;
         this.node.setPosition(pos.x, pos.y, movePos);
 
+        if (this._needBullet) {
+            this._currCreateBulletTime += deltaTime;
+
+            if (this._currCreateBulletTime > this.createBulletTime) {
+                this._gameManager.createEnemyBullet(this.node.position);
+                this._currCreateBulletTime = 0;
+            }
+        }
+
         if (movePos > OUTOFBOUNDE) {
             this.node.destroy();
         }
     }
 
-    show(speed: number) {
+    show(gameManager: GameManager,speed: number, needBullet: boolean) {
+        this._gameManager = gameManager;
         this._enemySpeed = speed;
+        this._needBullet = needBullet;
     }
 }
 
