@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, cclegacy } from 'cc';
+import { _decorator, Component, Node, cclegacy, Collider, ITriggerEvent } from 'cc';
+import { Constant } from '../frameWork/Constant';
 const { ccclass, property } = _decorator;
 
 /**
@@ -20,8 +21,14 @@ export class Bullet extends Component {
 
     private _isEnemyBullet = false;
 
-    start() {
-        // [3]
+    onEnable() {
+        const collider = this.getComponent(Collider);
+        collider.on('onTriggerEnter', this._onTriggerEnter , this)
+    }
+
+    onDisable() {
+        const collider = this.getComponent(Collider);
+        collider.off('onTriggerEnter', this._onTriggerEnter , this)
     }
 
     update(deltaTime: number) {
@@ -48,6 +55,11 @@ export class Bullet extends Component {
     show(speed: number, isEnemyBullet: boolean = false) {
         this.bulletSpeed = speed;
         this._isEnemyBullet = isEnemyBullet;
+    }
+
+    private _onTriggerEnter(event: ITriggerEvent) {
+        console.log('trigger bullet destory');
+        this.node.destroy();
     }
 }
 

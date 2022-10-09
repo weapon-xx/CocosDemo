@@ -10,5 +10,12 @@ export class Constant {
         PLANE2: 2,
         PLANE3: 3,
     };
+
+    public static ConllisionType = {
+        SELF_PLANE: 1 <<1,
+        ENEMY_PLANE: 1 << 2,
+        SELF_BULLET: 1 << 3,
+        ENEMY_BULLET: 1 << 4,
+    };
 }
 

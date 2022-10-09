@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, math, Vec3 } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, math, Vec3, Collider } from 'cc';
 import { Bullet } from '../bullet/Bullet';
 import { EnemyPlane } from '../plane/EnemyPlane';
 import { Constant } from './Constant';
@@ -101,8 +101,12 @@ export class GameManager extends Component {
         }
     }
 
+    public addScore() {
+        console.log('addScore');
+    }
+
     // 创建子弹
-    public createPlayerBullet(){
+    public createPlayerBullet() {
         const bullet = instantiate(this.bullet01);
         bullet.setParent(this.bulletRoot);
         const pos = this.playerPlane.position;
@@ -118,6 +122,10 @@ export class GameManager extends Component {
         bullet.setPosition(targetPos.x, targetPos.y, targetPos.z + 6);
         const bulletComp = bullet.getComponent(Bullet);
         bulletComp.show(this.bulletSpeed, true);
+
+        const colliderComp = bullet.getComponent(Collider);
+        colliderComp.setGroup(Constant.ConllisionType.ENEMY_BULLET);
+        colliderComp.setMask(Constant.ConllisionType.SELF_PLANE);
     }
     
     public creatrEnemyPlane() {
