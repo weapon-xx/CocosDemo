@@ -23,7 +23,7 @@ export class selfPlane extends Component {
         const collisionGroup = event.otherCollider.getGroup();
 
         if (collisionGroup === Constant.ConllisionType.ENEMY_PLANE || collisionGroup === Constant.ConllisionType.ENEMY_BULLET) {
-            console.log('reduce blood');
+            // console.log('reduce blood');
         }
     }
 }

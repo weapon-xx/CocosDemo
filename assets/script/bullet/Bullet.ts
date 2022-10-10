@@ -39,14 +39,14 @@ export class Bullet extends Component {
            this.node.setPosition(pos.x, pos.y, moveLength);
             if(moveLength > 50){
                 this.node.destroy();
-                console.log('bullet destroy');
+                // console.log('bullet destroy');
             }
         } else {
             moveLength = pos.z - this.bulletSpeed;
             this.node.setPosition(pos.x, pos.y, moveLength);
             if(moveLength < -50){
                 this.node.destroy();
-                console.log('bullet destroy');
+                // console.log('bullet destroy');
             }
         }
 
@@ -58,7 +58,7 @@ export class Bullet extends Component {
     }
 
     private _onTriggerEnter(event: ITriggerEvent) {
-        console.log('trigger bullet destory');
+        // console.log('trigger bullet destory');
         this.node.destroy();
     }
 }
